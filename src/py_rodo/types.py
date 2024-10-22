@@ -66,6 +66,7 @@ class RoutingKey(enum.StrEnum):
     PUBLISHED_STATUS_REPORT = "published.status_report"
     CONTAINER_PUBLISHED = "container.published"
     RELATIONSHIP_CREATE = "relationship.create"
+    RELATIONSHIP_DELETE = "relationship.delete"
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -402,6 +403,10 @@ class RelationshipCreatePayload(ObsMessageBusPayloadBase):
     notifiable_id: int
 
 
+class RelationshipDeletePayload(RelationshipCreatePayload):
+    pass
+
+
 QUEUE_TO_PAYLOAD_TYPE: Dict[RoutingKey, Type[ObsMessageBusPayloadBase]] = {
     # package
     RoutingKey.PACKAGE_BUILD_SUCCESS: PackageBuildSuccessPayload,
@@ -448,4 +453,5 @@ QUEUE_TO_PAYLOAD_TYPE: Dict[RoutingKey, Type[ObsMessageBusPayloadBase]] = {
     RoutingKey.CONTAINER_PUBLISHED: ContainerPublishedPayload,
     # relationship
     RoutingKey.RELATIONSHIP_CREATE: RelationshipCreatePayload,
+    RoutingKey.RELATIONSHIP_DELETE: RelationshipDeletePayload,
 }
