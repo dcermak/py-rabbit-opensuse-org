@@ -1,13 +1,17 @@
-from typing import Callable, Dict
+import json
+import logging
+from typing import Callable
+from typing import Dict
+
 import pika
 import pika.exceptions
-import logging
-import json
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.exchange_type import ExchangeType
 from pika.spec import Basic
 
-from py_rodo.types import QUEUE_TO_PAYLOAD_TYPE, ObsMessageBusPayloadBase, RoutingKey
+from py_rodo.types import QUEUE_TO_PAYLOAD_TYPE
+from py_rodo.types import ObsMessageBusPayloadBase
+from py_rodo.types import RoutingKey
 
 _PREFIX = "opensuse.obs."
 

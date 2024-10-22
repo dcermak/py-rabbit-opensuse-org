@@ -1,7 +1,9 @@
-from abc import ABCMeta
-from typing import Dict, Type
-from dataclassy import dataclass
 import enum
+from abc import ABCMeta
+from typing import Dict
+from typing import Type
+
+from dataclassy import dataclass
 
 
 @enum.unique

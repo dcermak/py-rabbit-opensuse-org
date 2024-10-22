@@ -27,3 +27,25 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 try-listening = "py_rodo.callback:try_listening"
+
+[tool.ruff.lint]
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # isort
+    "I"
+]
+ignore = [
+    # too long lines…
+    "E501"
+]
+
+[tool.ruff]
+src = ["src", "tests", "source"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+case-sensitive = true
