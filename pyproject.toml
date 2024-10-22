@@ -8,6 +8,7 @@ readme = "README.rst"
 packages = [
     { include = "py_rodo", from = "src" },
 ]
+include = ["src/py_rodo/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
