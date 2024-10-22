@@ -136,7 +136,7 @@ class PackageUndeletePayload(PackageDeletePayload):
 class PackageBranchPayload(PackageCreatePayload):
     """Payload of the ``.package.branch`` message."""
 
-    targetproject: str
+    targetproject: str | None = None
     targetpackage: str | None = None
     user: str
 
