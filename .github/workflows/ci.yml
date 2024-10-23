@@ -48,3 +48,49 @@ jobs:
       - run: poetry run ruff check .
 
       - run: poetry run mypy --strict src/
+
+  documentation:
+    name: Build the documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: poetry-${{ hashFiles('poetry.lock') }}
+
+      - run: |
+          pip install --upgrade poetry
+          poetry install
+
+      - run: poetry run sphinx-build -M html source build -W
+
+      - name: upload the build directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./build/html
+
+  deploy:
+    name: deploy to the gh-pages branch
+    runs-on: ubuntu-latest
+    needs: documentation
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./build
+
+      - run: touch ./build/.nojekyll
+
+      - name: deploy to github pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: build

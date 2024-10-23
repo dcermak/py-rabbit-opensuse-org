@@ -1,3 +1,9 @@
+"""This module contains the main entry point: the :py:class:`QueueProcessor`
+class. It provides a method to listen to the event bus and invoke user defined
+callbacks for specific message types.
+
+"""
+
 import json
 import logging
 from typing import Callable

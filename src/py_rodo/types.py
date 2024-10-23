@@ -1,3 +1,9 @@
+"""This module contains type definitions of the bodies of the messages sent out
+by the open build service and the mapping of these types to the respective
+routing keys.
+
+"""
+
 import enum
 from abc import ABCMeta
 from typing import Dict
