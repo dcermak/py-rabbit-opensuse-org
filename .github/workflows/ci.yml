@@ -94,3 +94,54 @@ jobs:
         with:
           branch: gh-pages
           folder: build
+
+  build:
+    name: Build the package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: poetry-${{ hashFiles('poetry.lock') }}
+
+      - name: Run the build
+        run: |
+          pipx install poetry
+          poetry install
+          poetry build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel
+          path: dist/py_rodo*whl
+          if-no-files-found: error
+
+  install:
+    name: Install the package
+    runs-on: "ubuntu-latest"
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel
+          path: dist
+
+      - name: install the wheel
+        run: pip install --user dist/py_rodo*whl
+
+      - name: run a smoke test that the package has been installed
+        run: python -c "import py_rodo; print (py_rodo.__name__)"
