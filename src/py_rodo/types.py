@@ -155,7 +155,7 @@ class PackageUploadPayload(PackageDeletePayload):
     filename: str
     target: str | None = None
     user: str
-    meta: int
+    meta: int | None = None
 
 
 class PackageServiceSuccessPayload(PackageDeletePayload):
@@ -183,6 +183,7 @@ class PackageVersionChangePayload(PackageServiceSuccessPayload):
 class PackageCommentPayload(PackageCreatePayload):
     """Payload of the ``.package.comment`` message."""
 
+    id: int
     commenters: str
     commenter: str
     comment_body: str
@@ -370,6 +371,7 @@ class RequestCommentPayload(RequestChangedPayload):
     comment_title: str | None = None
     # useless field, use number instead
     request_number: int | None = None
+    diff_ref: str | None = None
 
 
 class RequestStatusReportPayload(ObsMessageBusPayloadBase):
