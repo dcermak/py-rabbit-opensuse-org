@@ -1,4 +1,4 @@
-from .callback import listen_forever
+from .callback import QueueProcessor
 from .types import ActionPayload
 from .types import ContainerPublishedPayload
 from .types import PackageBranchPayload
@@ -42,7 +42,7 @@ from .types import RequestStatusReportPayload
 from .types import RoutingKey
 
 __all__ = [
-    "listen_forever",
+    "QueueProcessor",
     "ActionPayload",
     "ContainerPublishedPayload",
     "PackageBranchPayload",
