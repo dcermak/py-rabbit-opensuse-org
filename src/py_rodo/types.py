@@ -13,27 +13,27 @@ from dataclassy import dataclass
 
 
 @enum.unique
-class RequestStatus(enum.StrEnum):
+class RequestStatus(enum.Enum):
     """Possible states of a Review of a request"""
 
     #:: The request has been reviewed
-    REVIEW = enum.auto()
+    REVIEW = "review"
     #:  New request without any reviews
-    NEW = enum.auto()
+    NEW = "new"
     #: The request has been accepted
-    ACCEPTED = enum.auto()
+    ACCEPTED = "accepted"
     #: The request has been declined by the reviewer
-    DECLINED = enum.auto()
+    DECLINED = "declined"
     #: The request has been revoked by the submitter
-    REVOKED = enum.auto()
+    REVOKED = "revoked"
     #: The request has been superseded by a new one
-    SUPERSEDED = enum.auto()
+    SUPERSEDED = "superseded"
     #: The request has been deleted
-    DELETED = enum.auto()
+    DELETED = "deleted"
 
 
 @enum.unique
-class RoutingKey(enum.StrEnum):
+class RoutingKey(enum.Enum):
     PACKAGE_BUILD_SUCCESS = "package.build_success"
     PACKAGE_BUILD_FAILURE = "package.build_fail"
     PACKAGE_BUILD_UNCHANGED = "package.build_unchanged"
