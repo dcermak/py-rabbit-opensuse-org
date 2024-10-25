@@ -139,9 +139,12 @@ class PackageUndeletePayload(PackageDeletePayload):
     """Payload of the ``.package.undelete`` message."""
 
 
-class PackageBranchPayload(PackageCreatePayload):
+class PackageBranchPayload(ObsMessageBusPayloadBase):
     """Payload of the ``.package.branch`` message."""
 
+    project: str | None = None
+    package: str
+    sender: str | None = None
     targetproject: str | None = None
     targetpackage: str | None = None
     user: str
@@ -193,7 +196,8 @@ class PackageCommentPayload(PackageCreatePayload):
     commenters: str
     commenter: str
     comment_body: str
-    comment_title: str
+    comment_title: str | None = None
+    when: str | None = None
 
 
 class ProjectCreatePayload(ObsMessageBusPayloadBase):
@@ -290,6 +294,7 @@ class RepoStatusReportPayload(RepoBuildStartedPayload):
     """
 
     who: str
+    short_description: str | None = None
     name: str
     state: str
     url: str
@@ -332,7 +337,7 @@ class RequestDeletePayload(RequestChangedPayload):
 class RequestStateChangedPayload(RequestChangedPayload):
     id: int
     oldstate: str
-    duration: int | None
+    duration: int | None = None
 
 
 class RequestReviewChangedPayload(ObsMessageBusPayloadBase):
