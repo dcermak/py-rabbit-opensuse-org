@@ -1,0 +1,29 @@
+---
+name: Daily smoke test
+
+on:
+  schedule:
+    # 09:00 UTC every weekday
+    - cron: '0 9 * * 1-5'
+
+jobs:
+  timeout_job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: poetry-${{ hashFiles('poetry.lock') }}
+
+      - run: |
+          pip install --upgrade poetry
+          poetry install
+
+      - name: run the listener against rabbit.opensuse.org for 5 hours and 50 minutes and hope nothing breaks
+        run: poetry run try-listening -vvvv -i obs --timeout 21000

@@ -6,8 +6,10 @@ callbacks for specific message types.
 
 import json
 import logging
+from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import NoReturn
 from typing import Type
 
 import pika
@@ -186,6 +188,7 @@ class QueueProcessor:
 
 def try_listening() -> None:
     import argparse
+    import signal
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -198,6 +201,13 @@ def try_listening() -> None:
     )
     parser.add_argument(
         "--verbose", "-v", action="count", help="configure the logging verbosity"
+    )
+    parser.add_argument(
+        "--timeout",
+        nargs=1,
+        type=int,
+        default=[None],
+        help="Maximum time in seconds after which the program is killed and exits cleanly. Defaults to infinity.",
     )
 
     _LOG_LEVELS = [
@@ -262,4 +272,20 @@ def try_listening() -> None:
     listener = HardFailureListener(
         callbacks=callbacks, logger=logger, prefix=prefix, queue_url=queue_url
     )
-    listener.listen_forever()
+
+    if not (timeout_sec := args.timeout[0]):
+        listener.listen_forever()
+
+    def raise_system_exit(_signum: int, _frame: Any | None) -> NoReturn:
+        raise SystemExit(0)
+
+    signal.signal(signal.SIGALRM, raise_system_exit)
+    signal.alarm(timeout_sec)
+
+    try:
+        listener.listen_forever()
+    except SystemExit:
+        pass
+    finally:
+        # Cancel the alarm in case of a clean exit
+        signal.alarm(0)
