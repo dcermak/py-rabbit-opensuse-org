@@ -143,7 +143,8 @@ class PackageBranchPayload(ObsMessageBusPayloadBase):
     """Payload of the ``.package.branch`` message."""
 
     project: str | None = None
-    package: str
+    # in very rare circumstances, this can be `None`
+    package: str | None = None
     sender: str | None = None
     targetproject: str | None = None
     targetpackage: str | None = None
@@ -297,7 +298,7 @@ class RepoStatusReportPayload(RepoBuildStartedPayload):
     short_description: str | None = None
     name: str
     state: str
-    url: str
+    url: str | None = None
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
