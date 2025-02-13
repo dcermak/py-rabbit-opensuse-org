@@ -384,6 +384,8 @@ class RequestCommentPayload(RequestChangedPayload):
     # useless field, use number instead
     request_number: int | None = None
     diff_ref: str | None = None
+    diff_file_index: int | None = None
+    diff_line_number: int | None = None
 
 
 class RequestStatusReportPayload(ObsMessageBusPayloadBase):
