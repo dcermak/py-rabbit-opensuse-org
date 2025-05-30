@@ -350,7 +350,7 @@ class RequestReviewChangedPayload(ObsMessageBusPayloadBase):
     actions: list[ActionPayload]
     state: str
     when: str
-    who: str
+    who: str | None = None
     namespace: str
     reviewers: str | None = None
     by_user: str | None = None
