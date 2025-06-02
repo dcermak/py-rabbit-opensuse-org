@@ -324,7 +324,7 @@ class RequestChangedPayload(ObsMessageBusPayloadBase):
     actions: list[ActionPayload]
     state: RequestStatus
     when: str
-    who: str
+    who: str | None = None
 
 
 class RequestCreatePayload(RequestChangedPayload):
