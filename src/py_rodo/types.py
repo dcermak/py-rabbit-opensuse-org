@@ -349,6 +349,7 @@ class RequestReviewChangedPayload(ObsMessageBusPayloadBase):
     description: str | None = None
     actions: list[ActionPayload]
     state: str
+    oldstate: str | None = None
     when: str
     who: str | None = None
     namespace: str
