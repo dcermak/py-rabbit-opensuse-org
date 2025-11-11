@@ -19,13 +19,11 @@ jobs:
           python-version: '3.x'
       - uses: actions/cache@v4
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ hashFiles('poetry.lock') }}
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('pyproject.toml') }}
 
-      - run: |
-          pip install --upgrade poetry
-          poetry install
-          poetry run ruff format --check --diff .
+      - run: pip install tox
+      - run: tox -e format
 
   lint:
     name: Lint the source code
@@ -38,20 +36,19 @@ jobs:
           python-version: '3.x'
       - uses: actions/cache@v4
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ hashFiles('poetry.lock') }}
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('setup.py') }}
 
-      - run: |
-          pip install --upgrade poetry
-          poetry install
-
-      - run: poetry run ruff check .
-
-      - run: poetry run mypy --strict src/
+      - run: pip install tox
+      - run: tox run -e lint-dataclassy,lint-pydantic-v1,lint-pydantic-v2
+      - run: tox run -e mypy-dataclassy,mypy-pydantic-v1,mypy-pydantic-v2
 
   documentation:
     name: Build the documentation
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        backend: ["dataclassy", "pydantic-v1", "pydantic-v2"]
 
     steps:
       - uses: actions/checkout@v5
@@ -60,19 +57,16 @@ jobs:
           python-version: '3.x'
       - uses: actions/cache@v4
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ hashFiles('poetry.lock') }}
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('setup.py') }}
 
-      - run: |
-          pip install --upgrade poetry
-          poetry install
-
-      - run: poetry run sphinx-build -M html source build -W
+      - run: pip install tox
+      - run: tox -e doc-${{ matrix.backend }}
 
       - name: upload the build directory
         uses: actions/upload-artifact@v5
         with:
-          name: build
+          name: docs-${{ matrix.backend }}
           path: ./build/html
 
   deploy:
@@ -84,20 +78,28 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/download-artifact@v6
         with:
-          name: build
-          path: ./build
+          path: ./artifacts
 
-      - run: touch ./build/.nojekyll
+      - run: |
+          mkdir -p ./build/html
+          cp -r ./artifacts/docs-dataclassy/* ./build/html/dataclassy/
+          cp -r ./artifacts/docs-pydantic-v1/* ./build/html/pydantic-v1/
+          cp -r ./artifacts/docs-pydantic-v2/* ./build/html/pydantic-v2/
+
+      - run: touch ./build/html/.nojekyll
 
       - name: deploy to github pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: build
+          folder: build/html
 
   build:
     name: Build the package
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        backend: ["dataclassy", "pydantic-v1", "pydantic-v2"]
 
     steps:
       - uses: actions/checkout@v5
@@ -106,19 +108,20 @@ jobs:
           python-version: "3.x"
       - uses: actions/cache@v4
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ hashFiles('poetry.lock') }}
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('setup.py') }}
 
       - name: Run the build
+        env:
+          PY_RODO_BACKEND: ${{ matrix.backend }}
         run: |
-          pipx install poetry
-          poetry install
-          poetry build
+          pip install build
+          python -m build
 
       - uses: actions/upload-artifact@v5
         with:
-          name: wheel
-          path: dist/py_rodo*whl
+          name: wheel-${{ matrix.backend }}
+          path: dist/*.whl
           if-no-files-found: error
 
   install:
@@ -128,7 +131,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python_version: ["3.10", "3.11", "3.12"]
+        python_version: ["3.10", "3.11", "3.12", "3.13"]
+        backend: ["dataclassy", "pydantic-v1", "pydantic-v2"]
+        include:
+          # Python 3.14 only supports pydantic-v2
+          - python_version: "3.14"
+            backend: "pydantic-v2"
 
     steps:
       - uses: actions/setup-python@v6
@@ -137,11 +145,19 @@ jobs:
 
       - uses: actions/download-artifact@v6
         with:
-          name: wheel
+          name: wheel-${{ matrix.backend }}
           path: dist
 
       - name: install the wheel
-        run: pip install --user dist/py_rodo*whl
+        run: pip install --user dist/*.whl
 
       - name: run a smoke test that the package has been installed
         run: python -c "import py_rodo; print (py_rodo.__name__)"
+
+      - name: verify backend is chosen correctly
+        run: |
+          python -c "
+          from py_rodo.backend import __backend__
+          assert __backend__ == '${{ matrix.backend }}'
+          print('Backend verified:', __backend__)
+          "
