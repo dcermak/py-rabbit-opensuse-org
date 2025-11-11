@@ -1,0 +1,3 @@
+include README.rst
+include src/py_rodo/py.typed
+recursive-include scripts *.py

@@ -1,2 +1,4 @@
 /dist/
 /build/
+src/py_rodo/backend.py
+/.tox/
