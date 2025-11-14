@@ -5,11 +5,10 @@ routing keys.
 """
 
 import enum
-from abc import ABCMeta
 from typing import Dict
 from typing import Type
 
-from dataclassy import dataclass
+from .backend import ObsMessageBusPayloadBase
 
 
 @enum.unique
@@ -73,13 +72,6 @@ class RoutingKey(enum.Enum):
     CONTAINER_PUBLISHED = "container.published"
     RELATIONSHIP_CREATE = "relationship.create"
     RELATIONSHIP_DELETE = "relationship.delete"
-
-
-@dataclass(frozen=True, kw_only=True, slots=True)
-class ObsMessageBusPayloadBase(metaclass=ABCMeta):
-    """Base class for all rabbitmq message payloads from OBS."""
-
-    pass
 
 
 class PackageBuildSuccessPayload(ObsMessageBusPayloadBase):
@@ -194,7 +186,7 @@ class PackageCommentPayload(PackageCreatePayload):
     """Payload of the ``.package.comment`` message."""
 
     id: int
-    commenters: str
+    commenters: list[str]
     commenter: str
     comment_body: str
     comment_title: str | None = None
@@ -301,17 +293,17 @@ class RepoStatusReportPayload(RepoBuildStartedPayload):
     url: str | None = None
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class ActionPayload:
+class ActionPayload(ObsMessageBusPayloadBase):
     action_id: int
     type: str
-    sourceproject: str | None
-    sourcepackage: str | None
-    sourcerevision: str | None
+    sourceproject: str | None = None
+    sourcepackage: str | None = None
+    sourcerevision: str | None = None
     targetproject: str
-    targetpackage: str | None
-    makeoriginolder: bool | None
-    sourceupdate: str | None
+    targetpackage: str | None = None
+    target_releaseproject: str | None = None
+    makeoriginolder: bool | None = None
+    sourceupdate: str | None = None
 
 
 class RequestChangedPayload(ObsMessageBusPayloadBase):
@@ -353,7 +345,7 @@ class RequestReviewChangedPayload(ObsMessageBusPayloadBase):
     when: str
     who: str | None = None
     namespace: str
-    reviewers: str | None = None
+    reviewers: list[dict[str, int]] | None = None
     by_user: str | None = None
     by_group: str | None = None
     by_project: str | None = None
@@ -361,7 +353,7 @@ class RequestReviewChangedPayload(ObsMessageBusPayloadBase):
 
 
 class RequestReviewWantedPayload(RequestChangedPayload):
-    reviewers: str | None
+    reviewers: list[dict[str, int]] | None = None
     by_user: str | None = None
     by_group: str | None = None
     by_project: str | None = None

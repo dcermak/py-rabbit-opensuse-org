@@ -4,8 +4,11 @@ callbacks for specific message types.
 
 """
 
+from __future__ import annotations
+
 import json
 import logging
+from dataclasses import dataclass
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -14,13 +17,12 @@ from typing import Type
 
 import pika
 import pika.exceptions
-from dataclassy import dataclass
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.exchange_type import ExchangeType
 from pika.spec import Basic
 
+from py_rodo.backend import ObsMessageBusPayloadBase
 from py_rodo.types import QUEUE_TO_PAYLOAD_TYPE
-from py_rodo.types import ObsMessageBusPayloadBase
 from py_rodo.types import RoutingKey
 
 
@@ -43,7 +45,7 @@ class QueueProcessor:
     #: The dictionary allows to specify a callback function for each routing
     #: key. The callback function then receives the deserialized payload as an
     #: instance of the corresponding child class of
-    #: :py:class:`~py_rodo.types.ObsMessageBusPayloadBase`.
+    #: :py:class:`~py_rodo.backend.ObsMessageBusPayloadBase`.
     callbacks: Dict[RoutingKey, Callable[[ObsMessageBusPayloadBase], None]]
 
     def __post_init__(self) -> None:
@@ -76,7 +78,7 @@ class QueueProcessor:
         routing_key: RoutingKey,
     ) -> None:
         """Callback that is invoked if the construction of a child class of
-        :py:class:`~py_rodo.types.ObsMessageBusPayloadBase` from the message
+        :py:class:`~py_rodo.backend.ObsMessageBusPayloadBase` from the message
         body failed.
 
         This implementation only logs the error.
