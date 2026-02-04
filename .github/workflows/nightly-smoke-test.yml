@@ -18,12 +18,10 @@ jobs:
           python-version: '3.x'
       - uses: actions/cache@v4
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ hashFiles('poetry.lock') }}
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('pyproject.toml') }}
 
-      - run: |
-          pip install --upgrade poetry
-          poetry install
+      - run: pip install tox
 
       - name: run the listener against rabbit.opensuse.org for 5 hours and 50 minutes and hope nothing breaks
-        run: poetry run try-listening -vvvv -i obs --timeout 21000
+        run: tox -e devel-pydantic-v2 -- try-listening -vvvv -i obs --timeout 21000
