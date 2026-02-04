@@ -2,6 +2,14 @@ API documentation
 =================
 
 
+The config module
+-----------------
+
+.. automodule:: py_rodo.config
+   :members:
+   :undoc-members:
+
+
 The types module
 ----------------
 
