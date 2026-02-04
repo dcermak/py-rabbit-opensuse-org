@@ -103,7 +103,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: docs
           path: ./build/html
@@ -159,7 +159,7 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: wheel
           path: dist
