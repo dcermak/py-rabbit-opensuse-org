@@ -53,6 +53,7 @@ class RoutingKey(enum.Enum):
     PACKAGE_SERVICE_FAIL = "package.service_fail"
     PACKAGE_VERSION_CHANGE = "package.version_change"
     PACKAGE_COMMENT = "package.comment"
+    PACKAGE_UPSTREAM_VERSION_CHANGED = "package.upstream_version_changed"
     PROJECT_CREATE = "project.create"
     PROJECT_UPDATE_PROJECT_CONF = "project.update_project_conf"
     PROJECT_UPDATE = "project.update"
@@ -197,6 +198,14 @@ class PackageCommentPayload(PackageCreatePayload):
     comment_body: str
     comment_title: str | None = None
     when: str | None = None
+
+
+class PackageUpstreamVersionChangedPayload(ObsMessageBusPayloadBase):
+    """Payload of the ``.upstream_version_changed`` message."""
+
+    upstream_version: str
+    project: str
+    package: str
 
 
 class ProjectCreatePayload(ObsMessageBusPayloadBase):
@@ -440,6 +449,7 @@ QUEUE_TO_PAYLOAD_TYPE: Dict[RoutingKey, Type[ObsMessageBusPayloadBase]] = {
     RoutingKey.PACKAGE_SERVICE_SUCEESS: PackageServiceSuccessPayload,
     RoutingKey.PACKAGE_VERSION_CHANGE: PackageVersionChangePayload,
     RoutingKey.PACKAGE_COMMENT: PackageCommentPayload,
+    RoutingKey.PACKAGE_UPSTREAM_VERSION_CHANGED: PackageUpstreamVersionChangedPayload,
     # project
     RoutingKey.PROJECT_CREATE: ProjectCreatePayload,
     RoutingKey.PROJECT_UPDATE_PROJECT_CONF: ProjectUpdateProjectConfPayload,
