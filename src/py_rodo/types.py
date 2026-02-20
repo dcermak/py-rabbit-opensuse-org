@@ -314,9 +314,11 @@ class ActionPayload(ObsMessageBusPayloadBase):
     sourceproject: str | None = None
     sourcepackage: str | None = None
     sourcerevision: str | None = None
+    sourcerepository: str | None = None
     targetproject: str
     targetpackage: str | None = None
     target_releaseproject: str | None = None
+    targetrepository: str | None = None
     makeoriginolder: bool | None = None
     sourceupdate: str | None = None
     person: str | None = None
