@@ -161,7 +161,10 @@ class PackageCommitPayload(PackageDeletePayload):
 class PackageUploadPayload(PackageDeletePayload):
     """Payload of the ``.package.upload`` message."""
 
-    filename: str
+    # this one really, really shouldn't be None, but it is for one project and
+    # upstream has no idea why:
+    # https://github.com/openSUSE/open-build-service/issues/19366
+    filename: str | None = None
     target: str | None = None
     user: str
     meta: int | None = None
