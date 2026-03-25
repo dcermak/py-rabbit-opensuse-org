@@ -326,6 +326,7 @@ class ActionPayload(ObsMessageBusPayloadBase):
     sourceupdate: str | None = None
     person: str | None = None
     role: str | None = None
+    group: str | None = None
 
 
 class RequestChangedPayload(ObsMessageBusPayloadBase):
